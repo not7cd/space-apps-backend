@@ -1,14 +1,12 @@
+import requests
 from flask import Flask
-from flask_restful import Resource, Api
 
 app = Flask(__name__)
-api = Api(app)
+API_URL = "https://launchlibrary.net/1.4/"
 
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world'}
-
-api.add_resource(HelloWorld, '/')
+@app.route("/<path:subpath>")
+def proxy_api(subpath):
+    return requests.get(url=API_URL + subpath).text
 
 if __name__ == '__main__':
     app.run(debug=True)
