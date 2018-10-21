@@ -12,4 +12,4 @@ def get_all_launches():
 
 
 def pass_request(subpath):
-    return flask.jsonify(requests.get(url=API_URL + subpath).json())
+    return requests.get(url=API_URL + subpath).json()
