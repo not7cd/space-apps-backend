@@ -1,11 +1,14 @@
-import launch_api
-from flask import Flask, json
 from flask_caching import Cache
+from flask import Flask, json
+from flask_cors import CORS
 
 import stats
+import launch_api
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+CORS(app)
+
 
 @app.route("/<path:subpath>")
 def proxy_api(subpath):
@@ -17,7 +20,6 @@ def proxy_api(subpath):
 def starts_per_year():
     starts = stats.get_starts_per_year()
     return json.jsonify(starts)
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
