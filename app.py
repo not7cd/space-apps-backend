@@ -1,6 +1,9 @@
+import json
+import os
+
 from flask import jsonify
 from flask_caching import Cache
-from flask import Flask, json
+from flask import Flask
 from flask_cors import CORS
 
 import stats
@@ -21,6 +24,15 @@ def proxy_api(subpath):
 def starts_per_year():
     starts = stats.get_starts_per_year()
     return jsonify(starts)
+
+
+@app.route("/stats/suborbital")
+@cache.cached(timeout=86400) # cache for a day
+def suborbital_stats():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_url = os.path.join(SITE_ROOT, "suborbital.json")
+    data = json.load(open(json_url))
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
