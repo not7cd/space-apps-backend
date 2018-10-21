@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import flask
 import requests
 
 API_URL = "https://launchlibrary.net/1.4/"
@@ -11,4 +12,4 @@ def get_all_launches():
 
 
 def pass_request(subpath):
-    return requests.get(url=API_URL + subpath).json()
+    return flask.jsonify(requests.get(url=API_URL + subpath).json())
