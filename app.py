@@ -1,22 +1,23 @@
-from datetime import datetime
+import launch_api
+from flask import Flask, json
+from flask_caching import Cache
 
-import requests
-from flask import Flask
+import stats
 
 app = Flask(__name__)
-API_URL = "https://launchlibrary.net/1.4/"
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 @app.route("/<path:subpath>")
 def proxy_api(subpath):
-    return requests.get(url=API_URL + subpath).text
+    return launch_api.pass_request(subpath)
 
-@app.route("/statistics")
-def stats():
-    url = API_URL + "launch/1960-01-01/" + datetime.now().strftime("%Y-%m-%d") + "?limit=2000"
-    all = requests.get(url=url).json()
-    count = all['count']
-    launches = all['launches']
-    return str(count)
+
+@app.route("/stats")
+@cache.cached(timeout=86400) # cache for a day TODO: precalculate data & store in DB
+def starts_per_year():
+    starts = stats.get_starts_per_year()
+    return json.jsonify(starts)
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
